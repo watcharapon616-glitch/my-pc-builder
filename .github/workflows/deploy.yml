@@ -25,7 +25,7 @@ jobs:
         run: npm install --legacy-peer-deps --force
 
       - name: Build
-        run: CI=false npm run build
+        run: CI=false npx vite build
 
       - name: Prepare subfolder
         # ก๊อปปี้ไฟล์ build ไปไว้ในโฟลเดอร์ชื่อเดียวกับโปรเจกต์
