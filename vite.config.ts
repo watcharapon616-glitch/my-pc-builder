@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/my-pc-builder/', // ต้องมี / ปิดท้ายแบบนี้เท่านั้น
+  base: '/', // แก้เป็น '/' เพราะตอนนี้ builder.zynksite.com คือหน้าแรกสุดของโปรเจกต์นี้ครับ
 })

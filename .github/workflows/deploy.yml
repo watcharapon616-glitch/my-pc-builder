@@ -27,19 +27,10 @@ jobs:
       - name: Build
         run: CI=false npx vite build
 
-      - name: Prepare subfolder
-        # ก๊อปปี้ไฟล์ทั้งหมดไปไว้ในโฟลเดอร์ชื่อเดียวกับ base path
-        run: |
-          mkdir final_dist
-          mkdir -p final_dist/my-pc-builder
-          cp -r dist/* final_dist/my-pc-builder/
-          rm -rf dist
-          mv final_dist dist
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: ./dist # ส่งไฟล์จากโฟลเดอร์ dist โดยตรง ไม่ต้องสร้างโฟลเดอร์ซ้อนแล้ว
 
       - name: Deploy to GitHub Pages
         id: deployment
