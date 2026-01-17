@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
     Search, ShoppingCart, X, Zap, Trophy,
     Share2, AlertTriangle, CheckCircle2, RotateCcw,
-    Store, ChevronRight
+    Store, ChevronRight, Info
 } from 'lucide-react';
 import type { Product } from "./part";
 import { products, categories as DB_CATEGORIES } from "./part";
@@ -14,6 +14,11 @@ export default function Builder() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [activeCategory, setActiveCategory] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+
+    // --- Helper: ฟังก์ชันป้องกันรูปขาด ---
+    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+        e.currentTarget.src = "https://placehold.co/400x400/1e293b/white?text=Hardware+Image";
+    };
 
     // 1. Smart Filtering Logic
     const filteredProducts = products.filter(product => {
@@ -31,7 +36,7 @@ export default function Builder() {
         return true;
     });
 
-    // 2. Calculation Logic (Converted to USD for Global Market)
+    // 2. Calculation Logic
     const getBestPrice = (p: Product) => Math.min(...Object.values(p.prices));
     const totalPrice = Object.values(selectedParts).reduce((sum, p) => sum + getBestPrice(p), 0);
 
@@ -93,7 +98,12 @@ export default function Builder() {
                                 <div className="flex items-center gap-5">
                                     <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center border dark:border-white/10 shadow-sm overflow-hidden">
                                         {selectedParts[cat.id] ? (
-                                            <img src={selectedParts[cat.id].image} className="w-full h-full object-cover" alt="" />
+                                            <img 
+                                                src={selectedParts[cat.id].image} 
+                                                className="w-full h-full object-contain" 
+                                                alt={selectedParts[cat.id].name} 
+                                                onError={handleImageError}
+                                            />
                                         ) : (
                                             <Zap size={24} className="text-slate-300" />
                                         )}
@@ -152,6 +162,14 @@ export default function Builder() {
                                     <ShoppingCart size={18} /> Purchase via Amazon
                                 </button>
                             </div>
+                            
+                            {/* --- Legal Disclaimer --- */}
+                            <div className="pt-4 flex items-start gap-2 opacity-40 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
+                                <Info size={12} className="mt-0.5 shrink-0" />
+                                <p className="text-[8px] leading-tight font-medium uppercase tracking-tighter">
+                                    All images & trademarks are property of their owners. Prices are estimates.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -173,7 +191,7 @@ export default function Builder() {
                                     </div>
                                 )}
                             </div>
-                            <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full transition-all dark:text-white">
+                            <button onClick={() => {setIsModalOpen(false); setSearchTerm('');}} className="p-2 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full transition-all dark:text-white">
                                 <X size={24} />
                             </button>
                         </div>
@@ -182,9 +200,10 @@ export default function Builder() {
                             <div className="relative mb-8">
                                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
                                 <input
-                                    type="text" placeholder="Search components..."
+                                    type="text" placeholder={`Search ${activeCategory}...`}
                                     className="w-full pl-14 pr-6 py-5 bg-slate-100 dark:bg-black/40 rounded-[1.5rem] outline-none font-bold dark:text-white border-2 border-transparent focus:border-cyan-500 transition-all shadow-inner"
                                     onChange={(e) => setSearchTerm(e.target.value)}
+                                    value={searchTerm}
                                 />
                             </div>
 
@@ -192,11 +211,16 @@ export default function Builder() {
                                 {filteredProducts.length > 0 ? filteredProducts.map(p => (
                                     <div
                                         key={p.id}
-                                        onClick={() => { setSelectedParts({ ...selectedParts, [activeCategory]: p }); setIsModalOpen(false); }}
+                                        onClick={() => { setSelectedParts({ ...selectedParts, [activeCategory]: p }); setIsModalOpen(false); setSearchTerm(''); }}
                                         className="flex items-center gap-6 p-5 bg-slate-50 dark:bg-white/5 rounded-[2.5rem] cursor-pointer hover:border-cyan-500 border-2 border-transparent transition-all group"
                                     >
                                         <div className="w-20 h-20 rounded-2xl bg-white shadow-md overflow-hidden group-hover:scale-110 transition-transform">
-                                            <img src={p.image} className="w-full h-full object-cover" alt="" />
+                                            <img 
+                                                src={p.image} 
+                                                className="w-full h-full object-contain" 
+                                                alt={p.name} 
+                                                onError={handleImageError}
+                                            />
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex justify-between items-start">
